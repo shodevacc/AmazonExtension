@@ -1,0 +1,28 @@
+{
+    "manifest_version":2,
+    "name": "Amazon Shopping Assitant",
+    "version":"1.0",
+    "description":"Display Product Info without Navigation",
+    "icons":{
+        "128":"icon128.png",
+        "48":"icon48.png",
+        "16":"icon16.png"
+    },
+    "page_action":{
+        "default_icon":"icon16.png",
+        "default_popup":"popup.html",
+        "default_title":"AmazonHelper"
+    },
+    "background":{
+        "scripts":["eventPage.js"],
+        "persistent":false
+    },
+    "content_scripts":[
+        {
+            "matches":["https://www.amazon.com/s*"],
+            "js":["content.js"],
+            "css":["content.css"]
+        }
+    ],
+    "permissions":["storage","tabs","https://www.amazon.com/s*"]
+}
