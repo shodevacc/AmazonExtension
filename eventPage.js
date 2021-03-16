@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       console.log("THIS IS TAB", tabs);
       chrome.pageAction.show(tabs[0].id);
 
-      //Add an eventListener to check if tabs are changed(for page navigation)
+      //Add an eventListener to check if tabs are changed(for page navigation) even for page load
       chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         if (changeInfo.status == "complete") {
             chrome.tabs.sendMessage(tabs[0].id, {

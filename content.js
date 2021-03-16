@@ -76,15 +76,18 @@ const applyButtons = () => {
     if (buttonElement) {
       //If it doesnt exist then add it
       var button = document.createElement("input");
+      var newDiv = document.createElement("div");
       var url = `https://www.amazon.com${div.getAttribute("href")}`;
       button.setAttribute("type", "button");
       button.setAttribute("value", "Get Details");
       button.setAttribute("class", "addedButton");
-      button.setAttribute("name", "CLICK MEEEEEEEE");
+      div.setAttribute("id", "NewInfoDiv");
+      // button.setAttribute("name", "CLICK MEEEEEEEE");
       button.addEventListener("click", () => {
-        getDetails(url);
+        getDetails(url, newDiv);
       });
       div.parentNode.parentNode.append(button);
+      div.parentNode.parentNode.append(newDiv);
     }
   });
 };
@@ -111,22 +114,40 @@ const remove = () => {
 };
 
 // Get the details of the product
-const getDetails = (url) => {
-  fetch(url) //Get request of the generated url
-    .then((res) => res.text()) // use the .text() of res (object) to convert the byte stream into plain text
-    .then((text) => {
-      var parser = new DOMParser(); //DomParser API
-      var doc = parser.parseFromString(text, "text/html"); //parse into DOM query-able form
-      var items = doc.querySelectorAll(
-        ".a-unordered-list.a-vertical.a-spacing-mini span.a-list-item"
-      ); //Query the details of the product
-      var info = "";
-      //Generate the new info to be displayed on the alert
-      items.forEach((element) => {
-        info += element.innerHTML;
-      });
-      alert(info); // Make an alert to display the product info
-    })
-    // If there is an error catch it and display it as an alert
-    .catch((err) => alert(err));
+const getDetails = (url, newDiv) => {
+  // console.log("THE NEW DIV",newDiv)
+  if (newDiv.classList.contains("visibleInfo")) {
+    newDiv.classList.remove("visibleInfo");
+    newDiv.classList.add("InvisibleInfo");
+  } else {
+    if (newDiv.innerHTML) {
+      //If the data is already fetched just change the class so the newDiv info is visible
+      newDiv.classList.add("visibleInfo");
+      newDiv.classList.remove("InvisibleInfo");
+    } else {
+      //If no info has been fetched, fetch it and then populate newDiv
+      newDiv.innerHTML = "FETCHING NEW DATA"; //Just change the text to show that data is being fetched
+      fetch(url) //Get request of the generated url
+        .then((res) => res.text()) // use the .text() of res (object) to convert the byte stream into plain text
+        .then((text) => {
+          var parser = new DOMParser(); //DomParser API
+          var doc = parser.parseFromString(text, "text/html"); //parse into DOM query-able form
+          var items = doc.querySelectorAll(
+            ".a-unordered-list.a-vertical.a-spacing-mini span.a-list-item"
+          ); //Query the details of the product
+          var info = "";
+          //Generate the new info to be displayed on the alert
+          items.forEach((element) => {
+            info += element.innerHTML;
+          });
+          // document.querySelector(`NewInfoDiv`)
+          // alert(info); // Make an alert to display the product info
+          newDiv.innerHTML = info;
+          //Set the className to visibleInfo
+          newDiv.setAttribute("class", "visibleInfo");
+        })
+        // If there is an error catch it and display it as an alert
+        .catch((err) => (newDiv.innerHTML = err));
+    }
+  }
 };
